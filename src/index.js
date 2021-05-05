@@ -113,6 +113,9 @@ Promise.all(
             })
     })
 ).then(( seriesAndData ) => {
+    // Add LegendBox to chart (after series were created).
+    const legend = chart3D.addLegendBox().add(chart3D)
+
     // Setup streaming to all series.
     let tStart = Date.now()
     let dataAmount = 0
