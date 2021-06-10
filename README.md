@@ -1,6 +1,6 @@
-# 3D Realtime Line Chart
+# JavaScript 3D Realtime Line Chart
 
-![3D Realtime Line Chart](3dRealtimeLine.png)
+![JavaScript 3D Realtime Line Chart](3dRealtimeLine.png)
 
 This demo application belongs to the set of examples for LightningChart JS, data visualization library for JavaScript.
 
