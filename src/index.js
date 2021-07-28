@@ -23,7 +23,7 @@ const {
 
 // Initiate chart
 const chart3D = lightningChart().Chart3D({
-    // theme: Themes.dark
+    // theme: Themes.darkGold
 })
     // Set 3D bounding box dimensions to highlight X Axis. 
     .setBoundingBox({ x: 1.0, y: 0.5, z: 0.4 })
@@ -40,29 +40,19 @@ chart3D.getDefaultAxisZ().setTickStrategy( AxisTickStrategies.Empty )
 // Define Series configuration for simplified example modification.
 const seriesConf = [
     {
-        name: 'Series A',
-        thickness: 4,
-        color: ColorHEX('2E3D7C')
+        name: 'Series A'
     },
     {
-        name: 'Series B',
-        thickness: 4,
-        color: ColorHEX('282528')
+        name: 'Series B'
     },
     {
-        name: 'Series C',
-        thickness: 4,
-        color: ColorHEX('BA292E')
+        name: 'Series C'
     },
     {
-        name: 'Series D',
-        thickness: 4,
-        color: ColorHEX('E15D3A')
+        name: 'Series D'
     },
     {
-        name: 'Series E',
-        thickness: 4,
-        color: ColorHEX('FFA73C')
+        name: 'Series E'
     },
 ]
 
@@ -82,15 +72,9 @@ Promise.all(
     seriesConf.map((conf, iSeries) => {
         const seriesName = conf.name || ''
         const seriesZ = conf.z || iSeries
-        const seriesThickness = conf.thickness || 5
-        const seriesColor = conf.color || ColorRGBA(255, 255, 255)
         
         const series = chart3D.addLineSeries()
             .setName(seriesName)
-            .setLineStyle(new SolidLine({
-                thickness: seriesThickness,
-                fillStyle: new SolidFill({ color: seriesColor })
-            }))
     
         // Generate a static YZ data-set for this series that repeats indefinitely along the X plane.
         return createProgressiveTraceGenerator()
@@ -114,7 +98,13 @@ Promise.all(
     })
 ).then(( seriesAndData ) => {
     // Add LegendBox to chart (after series were created).
-    const legend = chart3D.addLegendBox().add(chart3D)
+    const legend = chart3D.addLegendBox()
+        // Dispose example UI elements automatically if they take too much space. This is to avoid bad UI on mobile / etc. devices.
+        .setAutoDispose({
+            type: 'max-width',
+            maxWidth: 0.20,
+        })
+        .add(chart3D)
 
     // Setup streaming to all series.
     let tStart = Date.now()
