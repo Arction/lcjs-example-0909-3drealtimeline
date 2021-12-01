@@ -8,10 +8,6 @@ const lcjs = require('@arction/lcjs')
 const {
     lightningChart,
     AxisTickStrategies,
-    ColorRGBA,
-    ColorHEX,
-    SolidFill,
-    SolidLine,
     AxisScrollStrategies,
     Themes
 } = lcjs
@@ -23,6 +19,7 @@ const {
 
 // Initiate chart
 const chart3D = lightningChart().Chart3D({
+    disableAnimations: true,
     // theme: Themes.darkGold
 })
     // Set 3D bounding box dimensions to highlight X Axis. 
