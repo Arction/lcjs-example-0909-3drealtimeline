@@ -4,25 +4,21 @@
 // Import LightningChartJS
 const lcjs = require('@arction/lcjs')
 
+// Import xydata
+const xydata = require('@arction/xydata')
+
 // Extract required parts from LightningChartJS.
-const {
-    lightningChart,
-    AxisTickStrategies,
-    AxisScrollStrategies,
-    Themes
-} = lcjs
+const { lightningChart, AxisTickStrategies, AxisScrollStrategies, Themes } = lcjs
 
 // Extract required parts from xyData.
-const {
-    createProgressiveTraceGenerator
-} = require('@arction/xydata')
+const { createProgressiveTraceGenerator } = xydata
 
 // Initiate chart
-const chart3D = lightningChart().Chart3D({
-    disableAnimations: true,
-    // theme: Themes.darkGold
-})
-    // Set 3D bounding box dimensions to highlight X Axis. 
+const chart3D = lightningChart()
+    .Chart3D({
+        // theme: Themes.darkGold
+    })
+    // Set 3D bounding box dimensions to highlight X Axis.
     .setBoundingBox({ x: 1.0, y: 0.5, z: 0.4 })
     .setTitle('3D Realtime Line Series')
 
@@ -32,32 +28,32 @@ chart3D.getDefaultAxisY().setTitle('Axis Y')
 chart3D.getDefaultAxisZ().setTitle('')
 
 // Disable Z Axis ticks as it doesn't represent any actual data dimension (only visual perspective).
-chart3D.getDefaultAxisZ().setTickStrategy( AxisTickStrategies.Empty )
+chart3D.getDefaultAxisZ().setTickStrategy(AxisTickStrategies.Empty)
 
 // Define Series configuration for simplified example modification.
 const seriesConf = [
     {
-        name: 'Series A'
+        name: 'Series A',
     },
     {
-        name: 'Series B'
+        name: 'Series B',
     },
     {
-        name: 'Series C'
+        name: 'Series C',
     },
     {
-        name: 'Series D'
+        name: 'Series D',
     },
     {
-        name: 'Series E'
+        name: 'Series E',
     },
 ]
 
 // Configure Progressive X Axis.
-chart3D.getDefaultAxisX().setInterval(-1000, 0).setScrollStrategy(AxisScrollStrategies.progressive)
+chart3D.getDefaultAxisX().setInterval({ start: -1000, end: 0, stopAxisAfter: false }).setScrollStrategy(AxisScrollStrategies.progressive)
 
 // Set Z Axis interval immediately.
-chart3D.getDefaultAxisZ().setInterval(-1, 1+seriesConf.reduce((prev, cur, i) => Math.max(prev, i), 0), false, true)
+chart3D.getDefaultAxisZ().setInterval({ start: -1, end: 1 + seriesConf.reduce((prev, cur, i) => Math.max(prev, i), 0) })
 
 // : Create Series and generate test data :
 // Amount of unique data points per Series (looped indefinitely along the X plane)
@@ -69,10 +65,9 @@ Promise.all(
     seriesConf.map((conf, iSeries) => {
         const seriesName = conf.name || ''
         const seriesZ = conf.z || iSeries
-        
-        const series = chart3D.addLineSeries()
-            .setName(seriesName)
-    
+
+        const series = chart3D.addLineSeries().setName(seriesName)
+
         // Generate a static YZ data-set for this series that repeats indefinitely along the X plane.
         return createProgressiveTraceGenerator()
             .setNumberOfPoints(seriesUniqueDataAmount / 2)
@@ -82,24 +77,25 @@ Promise.all(
                 // Map XY data to YZ data.
                 return data.map((xy) => ({
                     y: xy.y,
-                    z: seriesZ
+                    z: seriesZ,
                 }))
             })
             .then((data) => {
                 // Repeat data set so that it can be looped indefinitely.
                 return {
                     series,
-                    data: data.concat(data.slice(1, -1).reverse())
+                    data: data.concat(data.slice(1, -1).reverse()),
                 }
             })
-    })
-).then(( seriesAndData ) => {
+    }),
+).then((seriesAndData) => {
     // Add LegendBox to chart (after series were created).
-    const legend = chart3D.addLegendBox()
+    const legend = chart3D
+        .addLegendBox()
         // Dispose example UI elements automatically if they take too much space. This is to avoid bad UI on mobile / etc. devices.
         .setAutoDispose({
             type: 'max-width',
-            maxWidth: 0.20,
+            maxWidth: 0.2,
         })
         .add(chart3D)
 
@@ -108,23 +104,23 @@ Promise.all(
     let dataAmount = 0
     let xPos = 0
     // Keep track of data currently in each series.
-    seriesAndData.forEach(( item ) => item.currentData = [])
+    seriesAndData.forEach((item) => (item.currentData = []))
 
     const pushNewData = () => {
-        for ( let iNewPoint = 0; iNewPoint < pointsPerFrame; iNewPoint ++ ) {
-            for ( const { series, data, currentData } of seriesAndData ) {
+        for (let iNewPoint = 0; iNewPoint < pointsPerFrame; iNewPoint++) {
+            for (const { series, data, currentData } of seriesAndData) {
                 // Pick YZ coordinates from data set.
                 const yz = data[xPos % data.length]
                 const point = {
                     x: xPos,
                     y: yz.y,
-                    z: yz.z
+                    z: yz.z,
                 }
                 series.add(point)
                 currentData.push(point)
-                dataAmount ++
+                dataAmount++
             }
-            xPos ++
+            xPos++
         }
         // Schedule next batch of data.
         requestAnimationFrame(pushNewData)
@@ -134,10 +130,9 @@ Promise.all(
     // Schedule cleaning of old data.
     const checkCleanupOldData = () => {
         const minPointsToKeep = 1000
-        for ( let i = 0; i < seriesAndData.length; i ++ ) {
+        for (let i = 0; i < seriesAndData.length; i++) {
             const { series, data, currentData } = seriesAndData[i]
-            if (currentData.length < minPointsToKeep)
-                continue
+            if (currentData.length < minPointsToKeep) continue
             const spliceStart = currentData.length - minPointsToKeep
             const spliceCount = Math.min(minPointsToKeep, currentData.length - spliceStart)
             const pointsToKeep = currentData.splice(spliceStart, spliceCount)
@@ -164,4 +159,3 @@ Promise.all(
     }
     setInterval(updateChartTitle, 1000)
 })
-
