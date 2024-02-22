@@ -50,7 +50,10 @@ const seriesConf = [
 ]
 
 // Configure Progressive X Axis.
-chart3D.getDefaultAxisX().setInterval({ start: -1000, end: 0, stopAxisAfter: false }).setScrollStrategy(AxisScrollStrategies.progressive)
+chart3D
+    .getDefaultAxisX()
+    .setDefaultInterval((state) => ({ end: state.dataMax, start: (state.dataMax ?? 0) - 1000, stopAxisAfter: false }))
+    .setScrollStrategy(AxisScrollStrategies.progressive)
 
 // Set Z Axis interval immediately.
 chart3D.getDefaultAxisZ().setInterval({ start: -1, end: 1 + seriesConf.reduce((prev, cur, i) => Math.max(prev, i), 0) })
