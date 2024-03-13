@@ -16,7 +16,7 @@ const { createProgressiveTraceGenerator } = xydata
 // Initiate chart
 const chart3D = lightningChart()
     .Chart3D({
-        theme: Themes[new URLSearchParams(window.location.search).get('theme') || 'darkGold'] || undefined,
+        theme: Themes[new URLSearchParams(window.location.search).get('theme') || 'darkGold'] || undefined
     })
     // Set 3D bounding box dimensions to highlight X Axis.
     .setBoundingBox({ x: 1.0, y: 0.5, z: 0.4 })
