@@ -2,10 +2,10 @@
  * LightningChartJS example that showcases LineSeries3D in a realtime application (continuous high speed data input).
  */
 // Import LightningChartJS
-const lcjs = require('@arction/lcjs')
+const lcjs = require('@lightningchart/lcjs')
 
 // Import xydata
-const xydata = require('@arction/xydata')
+const xydata = require('@lightningchart/xydata')
 
 // Extract required parts from LightningChartJS.
 const { lightningChart, AxisTickStrategies, AxisScrollStrategies, Themes } = lcjs
